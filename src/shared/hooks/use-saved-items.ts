@@ -29,6 +29,8 @@ export function useSavedItems() {
   const raw = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const savedIds: string[] = JSON.parse(raw);
 
+  const isFirstVisit = typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY) === null;
+
   const isSaved = useCallback(
     (id: string) => savedIds.includes(id),
     [savedIds],
@@ -43,5 +45,12 @@ export function useSavedItems() {
     window.dispatchEvent(new CustomEvent('saved-items-change'));
   }, []);
 
-  return { savedIds, isSaved, toggleSave };
+  const markVisited = useCallback(() => {
+    if (localStorage.getItem(STORAGE_KEY) === null) {
+      localStorage.setItem(STORAGE_KEY, '[]');
+      window.dispatchEvent(new CustomEvent('saved-items-change'));
+    }
+  }, []);
+
+  return { savedIds, isSaved, toggleSave, isFirstVisit, markVisited };
 }

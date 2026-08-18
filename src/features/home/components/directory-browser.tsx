@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { ExternalLink, AlertTriangle, Bookmark } from 'lucide-react';
+import { ExternalLink, AlertTriangle, Bookmark, Smartphone } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/components/ui/tabs';
 import { useSavedItems } from '@/shared/hooks/use-saved-items';
 import { getIcon } from '@/shared/lib/icons';
@@ -34,7 +34,7 @@ interface DirectoryBrowserProps {
   sections: SectionInfo[];
 }
 
-function ItemCard({ item, onRemove, showSaveInstead }: { item: DirectoryItem; onRemove: () => void; showSaveInstead?: boolean }) {
+function ItemCard({ item, onToggle, saved }: { item: DirectoryItem; onToggle: () => void; saved: boolean }) {
   return (
     <a
       href={item.url || '#'}
@@ -51,7 +51,7 @@ function ItemCard({ item, onRemove, showSaveInstead }: { item: DirectoryItem; on
             {item.sectionName}
           </span>
           <div className="flex items-center gap-1">
-            <SaveButton saved={!showSaveInstead} onToggle={onRemove} />
+            <SaveButton saved={saved} onToggle={onToggle} />
             {item.url && (
               <ExternalLink className="text-muted-foreground h-4 w-4 opacity-0 transition-all duration-200 group-hover:opacity-100" />
             )}
@@ -79,29 +79,57 @@ function ItemCard({ item, onRemove, showSaveInstead }: { item: DirectoryItem; on
   );
 }
 
-function FeaturedRecommendations({ items, onSave }: { items: DirectoryItem[]; onSave: (id: string) => void }) {
+function DeviceNote() {
   return (
-    <div>
-      <div className="border-border mb-6 flex flex-col items-center rounded-lg border border-dashed py-8 text-center">
-        <Bookmark className="text-muted-foreground mb-3 h-8 w-8" />
-        <p className="text-muted-foreground max-w-sm text-sm">
-          Save sites from any category using the bookmark icon, and they&apos;ll appear here for quick access.
+    <p className="text-muted-foreground mt-4 flex items-center gap-1.5 text-xs">
+      <Smartphone className="h-3 w-3" />
+      Saved sites are stored on this device only.
+    </p>
+  );
+}
+
+function OnboardingView({ items, savedIds, onToggle, onDone }: {
+  items: DirectoryItem[];
+  savedIds: string[];
+  onToggle: (id: string) => void;
+  onDone: () => void;
+}) {
+  const savedCount = savedIds.length;
+
+  return (
+    <section>
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold">Pick your favorites</h2>
+        <p className="text-muted-foreground mt-1 text-sm">
+          Tap the bookmark icon on sites you use often. They&apos;ll show up here on your next visit.
         </p>
       </div>
-      <h3 className="text-muted-foreground mb-4 text-sm font-semibold tracking-wide uppercase">
-        Recommended
-      </h3>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         {items.map((item) => (
-          <ItemCard key={item._id} item={item} onRemove={() => onSave(item._id)} showSaveInstead />
+          <ItemCard
+            key={item._id}
+            item={item}
+            saved={savedIds.includes(item._id)}
+            onToggle={() => onToggle(item._id)}
+          />
         ))}
       </div>
-    </div>
+      <div className="mt-6 flex items-center justify-between">
+        <DeviceNote />
+        <button
+          type="button"
+          onClick={onDone}
+          className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium transition-colors"
+        >
+          {savedCount > 0 ? `Done (${savedCount} saved)` : 'Skip'}
+        </button>
+      </div>
+    </section>
   );
 }
 
 export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
-  const { savedIds, toggleSave } = useSavedItems();
+  const { savedIds, isSaved, toggleSave, isFirstVisit, markVisited } = useSavedItems();
   const [activeSection, setActiveSection] = useState(sections[0]?.slug ?? '');
 
   const savedItems = useMemo(
@@ -124,13 +152,47 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
     [sections, savedItems],
   );
 
+  const featuredItems = useMemo(
+    () => items.filter((item) => item.featured),
+    [items],
+  );
+
+  if (isFirstVisit) {
+    return (
+      <OnboardingView
+        items={featuredItems}
+        savedIds={savedIds}
+        onToggle={toggleSave}
+        onDone={markVisited}
+      />
+    );
+  }
+
   if (savedItems.length === 0) {
     return (
       <section>
         <h2 className="text-muted-foreground mb-4 text-sm font-semibold tracking-wide uppercase">
           My Saved Sites
         </h2>
-        <FeaturedRecommendations items={recommendations} onSave={toggleSave} />
+        <div className="border-border mb-6 flex flex-col items-center rounded-lg border border-dashed py-8 text-center">
+          <Bookmark className="text-muted-foreground mb-3 h-8 w-8" />
+          <p className="text-muted-foreground max-w-sm text-sm">
+            No saved sites yet. Browse the categories in the sidebar and tap the bookmark icon to save.
+          </p>
+        </div>
+        {recommendations.length > 0 && (
+          <>
+            <h3 className="text-muted-foreground mb-4 text-sm font-semibold tracking-wide uppercase">
+              Recommended
+            </h3>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {recommendations.map((item) => (
+                <ItemCard key={item._id} item={item} saved={false} onToggle={() => toggleSave(item._id)} />
+              ))}
+            </div>
+          </>
+        )}
+        <DeviceNote />
       </section>
     );
   }
@@ -156,7 +218,8 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
               <ItemCard
                 key={item._id}
                 item={item}
-                onRemove={() => toggleSave(item._id)}
+                saved={true}
+                onToggle={() => toggleSave(item._id)}
               />
             ))}
           </div>
@@ -190,7 +253,8 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
               <ItemCard
                 key={item._id}
                 item={item}
-                onRemove={() => toggleSave(item._id)}
+                saved={true}
+                onToggle={() => toggleSave(item._id)}
               />
             ))}
           </div>
@@ -206,14 +270,15 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
                 <ItemCard
                   key={item._id}
                   item={item}
-                  onRemove={() => toggleSave(item._id)}
-                  showSaveInstead
+                  saved={false}
+                  onToggle={() => toggleSave(item._id)}
                 />
               ))}
             </div>
           </TabsContent>
         )}
       </Tabs>
+      <DeviceNote />
     </section>
   );
 }
