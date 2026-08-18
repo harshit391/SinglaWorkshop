@@ -25,19 +25,13 @@ interface ItemListProps {
 
 export function ItemList({ items, sectionSlug }: ItemListProps) {
   const { savedIds, toggleSave } = useSavedItems();
-  const [toggled, setToggled] = useState<string[]>([]);
+  const [justSaved, setJustSaved] = useState<string[]>([]);
 
   function handleToggle(id: string) {
     toggleSave(id);
-    setToggled((prev) =>
+    setJustSaved((prev) =>
       prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
     );
-  }
-
-  function isItemSaved(id: string) {
-    const wasSaved = savedIds.includes(id);
-    const wasToggled = toggled.includes(id);
-    return wasSaved ? !wasToggled : wasToggled;
   }
 
   if (items.length === 0) {
@@ -55,7 +49,7 @@ export function ItemList({ items, sectionSlug }: ItemListProps) {
           key={item._id}
           item={item}
           sectionSlug={sectionSlug}
-          saved={isItemSaved(item._id)}
+          saved={savedIds.includes(item._id) || justSaved.includes(item._id)}
           onToggleSave={() => handleToggle(item._id)}
         />
       ))}
