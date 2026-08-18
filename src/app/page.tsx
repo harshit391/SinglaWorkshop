@@ -28,6 +28,7 @@ export default async function HomePage() {
     url: item.url ?? '',
     urlUnstable: item.urlUnstable ?? false,
     pinned: item.pinned ?? false,
+    featured: item.featured ?? false,
     sectionName: item.section?.name ?? 'Uncategorized',
     sectionSlug: item.section?.slug ?? '',
     sectionColor: item.section?.color ?? 'hsl(36 100% 50%)',

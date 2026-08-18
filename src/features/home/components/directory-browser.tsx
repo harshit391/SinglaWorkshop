@@ -15,6 +15,7 @@ export interface DirectoryItem {
   url: string;
   urlUnstable: boolean;
   pinned: boolean;
+  featured: boolean;
   sectionName: string;
   sectionSlug: string;
   sectionColor: string;
@@ -33,7 +34,7 @@ interface DirectoryBrowserProps {
   sections: SectionInfo[];
 }
 
-function ItemCard({ item, onRemove }: { item: DirectoryItem; onRemove: () => void }) {
+function ItemCard({ item, onRemove, showSaveInstead }: { item: DirectoryItem; onRemove: () => void; showSaveInstead?: boolean }) {
   return (
     <a
       href={item.url || '#'}
@@ -50,7 +51,7 @@ function ItemCard({ item, onRemove }: { item: DirectoryItem; onRemove: () => voi
             {item.sectionName}
           </span>
           <div className="flex items-center gap-1">
-            <SaveButton saved={true} onToggle={onRemove} />
+            <SaveButton saved={!showSaveInstead} onToggle={onRemove} />
             {item.url && (
               <ExternalLink className="text-muted-foreground h-4 w-4 opacity-0 transition-all duration-200 group-hover:opacity-100" />
             )}
@@ -78,14 +79,23 @@ function ItemCard({ item, onRemove }: { item: DirectoryItem; onRemove: () => voi
   );
 }
 
-function EmptyState() {
+function FeaturedRecommendations({ items, onSave }: { items: DirectoryItem[]; onSave: (id: string) => void }) {
   return (
-    <div className="border-border flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
-      <Bookmark className="text-muted-foreground mb-3 h-10 w-10" />
-      <h3 className="text-lg font-semibold">No saved sites yet</h3>
-      <p className="text-muted-foreground mt-1 max-w-sm text-sm">
-        Browse the categories in the sidebar and tap the bookmark icon on any site to save it here for quick access.
-      </p>
+    <div>
+      <div className="border-border mb-6 flex flex-col items-center rounded-lg border border-dashed py-8 text-center">
+        <Bookmark className="text-muted-foreground mb-3 h-8 w-8" />
+        <p className="text-muted-foreground max-w-sm text-sm">
+          Save sites from any category using the bookmark icon, and they&apos;ll appear here for quick access.
+        </p>
+      </div>
+      <h3 className="text-muted-foreground mb-4 text-sm font-semibold tracking-wide uppercase">
+        Recommended
+      </h3>
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        {items.map((item) => (
+          <ItemCard key={item._id} item={item} onRemove={() => onSave(item._id)} showSaveInstead />
+        ))}
+      </div>
     </div>
   );
 }
@@ -96,6 +106,11 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
 
   const savedItems = useMemo(
     () => items.filter((item) => savedIds.includes(item._id)),
+    [items, savedIds],
+  );
+
+  const recommendations = useMemo(
+    () => items.filter((item) => item.featured && !savedIds.includes(item._id)),
     [items, savedIds],
   );
 
@@ -115,7 +130,7 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
         <h2 className="text-muted-foreground mb-4 text-sm font-semibold tracking-wide uppercase">
           My Saved Sites
         </h2>
-        <EmptyState />
+        <FeaturedRecommendations items={recommendations} onSave={toggleSave} />
       </section>
     );
   }
@@ -130,6 +145,9 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
         <TabsList>
           <TabsTrigger value="list">List</TabsTrigger>
           <TabsTrigger value="by-section">By Section</TabsTrigger>
+          {recommendations.length > 0 && (
+            <TabsTrigger value="recommended">Recommended</TabsTrigger>
+          )}
         </TabsList>
 
         <TabsContent value="list" className="mt-4">
@@ -180,6 +198,21 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
             <p className="text-muted-foreground text-sm">No saved sites in this section.</p>
           )}
         </TabsContent>
+
+        {recommendations.length > 0 && (
+          <TabsContent value="recommended" className="mt-4">
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              {recommendations.map((item) => (
+                <ItemCard
+                  key={item._id}
+                  item={item}
+                  onRemove={() => toggleSave(item._id)}
+                  showSaveInstead
+                />
+              ))}
+            </div>
+          </TabsContent>
+        )}
       </Tabs>
     </section>
   );
