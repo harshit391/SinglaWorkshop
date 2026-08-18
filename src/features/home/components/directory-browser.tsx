@@ -88,13 +88,17 @@ function DeviceNote() {
   );
 }
 
-function OnboardingView({ items, savedIds, onToggle, onDone }: {
+function OnboardingView({ items, onDone }: {
   items: DirectoryItem[];
-  savedIds: string[];
-  onToggle: (id: string) => void;
-  onDone: () => void;
+  onDone: (selectedIds: string[]) => void;
 }) {
-  const savedCount = savedIds.length;
+  const [selected, setSelected] = useState<string[]>([]);
+
+  function toggle(id: string) {
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  }
 
   return (
     <section>
@@ -109,8 +113,8 @@ function OnboardingView({ items, savedIds, onToggle, onDone }: {
           <ItemCard
             key={item._id}
             item={item}
-            saved={savedIds.includes(item._id)}
-            onToggle={() => onToggle(item._id)}
+            saved={selected.includes(item._id)}
+            onToggle={() => toggle(item._id)}
           />
         ))}
       </div>
@@ -118,10 +122,10 @@ function OnboardingView({ items, savedIds, onToggle, onDone }: {
         <DeviceNote />
         <button
           type="button"
-          onClick={onDone}
+          onClick={() => onDone(selected)}
           className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium transition-colors"
         >
-          {savedCount > 0 ? `Done (${savedCount} saved)` : 'Skip'}
+          {selected.length > 0 ? `Done (${selected.length} saved)` : 'Skip'}
         </button>
       </div>
     </section>
@@ -161,9 +165,11 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
     return (
       <OnboardingView
         items={featuredItems}
-        savedIds={savedIds}
-        onToggle={toggleSave}
-        onDone={markVisited}
+        onDone={(selectedIds) => {
+          selectedIds.forEach((id) => toggleSave(id));
+          markVisited();
+          window.location.reload();
+        }}
       />
     );
   }

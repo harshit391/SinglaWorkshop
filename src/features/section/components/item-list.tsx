@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useSavedItems } from '@/shared/hooks/use-saved-items';
 import { ItemCard } from './item-card';
 
@@ -23,7 +24,21 @@ interface ItemListProps {
 }
 
 export function ItemList({ items, sectionSlug }: ItemListProps) {
-  const { isSaved, toggleSave } = useSavedItems();
+  const { savedIds, toggleSave } = useSavedItems();
+  const [toggled, setToggled] = useState<string[]>([]);
+
+  function handleToggle(id: string) {
+    toggleSave(id);
+    setToggled((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id],
+    );
+  }
+
+  function isItemSaved(id: string) {
+    const wasSaved = savedIds.includes(id);
+    const wasToggled = toggled.includes(id);
+    return wasSaved ? !wasToggled : wasToggled;
+  }
 
   if (items.length === 0) {
     return (
@@ -40,8 +55,8 @@ export function ItemList({ items, sectionSlug }: ItemListProps) {
           key={item._id}
           item={item}
           sectionSlug={sectionSlug}
-          saved={isSaved(item._id)}
-          onToggleSave={() => toggleSave(item._id)}
+          saved={isItemSaved(item._id)}
+          onToggleSave={() => handleToggle(item._id)}
         />
       ))}
     </div>
