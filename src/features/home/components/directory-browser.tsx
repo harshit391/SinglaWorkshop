@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { ExternalLink, AlertTriangle } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { ExternalLink, AlertTriangle, Bookmark } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/shared/components/ui/tabs';
 import { useSavedItems } from '@/shared/hooks/use-saved-items';
 import { getIcon } from '@/shared/lib/icons';
@@ -33,7 +33,7 @@ interface DirectoryBrowserProps {
   sections: SectionInfo[];
 }
 
-function ItemCard({ item, saved, onToggleSave }: { item: DirectoryItem; saved: boolean; onToggleSave: () => void }) {
+function ItemCard({ item, onRemove }: { item: DirectoryItem; onRemove: () => void }) {
   return (
     <a
       href={item.url || '#'}
@@ -41,9 +41,7 @@ function ItemCard({ item, saved, onToggleSave }: { item: DirectoryItem; saved: b
       rel={item.url ? 'noopener noreferrer' : undefined}
       className="group block"
     >
-      <article
-        className={`border-border bg-card hover:border-primary/30 hover:shadow-primary/5 relative h-full rounded-lg border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg ${saved ? 'border-primary/20 bg-primary/[0.02]' : ''}`}
-      >
+      <article className="border-border bg-card hover:border-primary/30 hover:shadow-primary/5 relative h-full rounded-lg border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
         <div className="flex items-start justify-between">
           <span
             className="font-mono text-[10px] font-semibold tracking-widest uppercase"
@@ -52,7 +50,7 @@ function ItemCard({ item, saved, onToggleSave }: { item: DirectoryItem; saved: b
             {item.sectionName}
           </span>
           <div className="flex items-center gap-1">
-            <SaveButton saved={saved} onToggle={onToggleSave} />
+            <SaveButton saved={true} onToggle={onRemove} />
             {item.url && (
               <ExternalLink className="text-muted-foreground h-4 w-4 opacity-0 transition-all duration-200 group-hover:opacity-100" />
             )}
@@ -80,39 +78,75 @@ function ItemCard({ item, saved, onToggleSave }: { item: DirectoryItem; saved: b
   );
 }
 
+function EmptyState() {
+  return (
+    <div className="border-border flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
+      <Bookmark className="text-muted-foreground mb-3 h-10 w-10" />
+      <h3 className="text-lg font-semibold">No saved sites yet</h3>
+      <p className="text-muted-foreground mt-1 max-w-sm text-sm">
+        Browse the categories in the sidebar and tap the bookmark icon on any site to save it here for quick access.
+      </p>
+    </div>
+  );
+}
+
 export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
-  const { isSaved, toggleSave } = useSavedItems();
+  const { savedIds, toggleSave } = useSavedItems();
   const [activeSection, setActiveSection] = useState(sections[0]?.slug ?? '');
 
-  const filteredItems = items.filter((item) => item.sectionSlug === activeSection);
+  const savedItems = useMemo(
+    () => items.filter((item) => savedIds.includes(item._id)),
+    [items, savedIds],
+  );
+
+  const savedBySection = useMemo(
+    () => savedItems.filter((item) => item.sectionSlug === activeSection),
+    [savedItems, activeSection],
+  );
+
+  const sectionsWithSaved = useMemo(
+    () => sections.filter((s) => savedItems.some((item) => item.sectionSlug === s.slug)),
+    [sections, savedItems],
+  );
+
+  if (savedItems.length === 0) {
+    return (
+      <section>
+        <h2 className="text-muted-foreground mb-4 text-sm font-semibold tracking-wide uppercase">
+          My Saved Sites
+        </h2>
+        <EmptyState />
+      </section>
+    );
+  }
 
   return (
     <section>
-      <Tabs defaultValue="all">
+      <h2 className="text-muted-foreground mb-4 text-sm font-semibold tracking-wide uppercase">
+        My Saved Sites
+        <span className="text-muted-foreground ml-2 text-xs font-normal">({savedItems.length})</span>
+      </h2>
+      <Tabs defaultValue="list">
         <TabsList>
-          <TabsTrigger value="all">All Sites</TabsTrigger>
+          <TabsTrigger value="list">List</TabsTrigger>
           <TabsTrigger value="by-section">By Section</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="all" className="mt-4">
+        <TabsContent value="list" className="mt-4">
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {items.map((item) => (
+            {savedItems.map((item) => (
               <ItemCard
                 key={item._id}
                 item={item}
-                saved={isSaved(item._id)}
-                onToggleSave={() => toggleSave(item._id)}
+                onRemove={() => toggleSave(item._id)}
               />
             ))}
           </div>
-          {items.length === 0 && (
-            <p className="text-muted-foreground text-sm">No sites found.</p>
-          )}
         </TabsContent>
 
         <TabsContent value="by-section" className="mt-4">
           <div className="mb-4 flex gap-2 overflow-x-auto pb-2">
-            {sections.map((section) => {
+            {sectionsWithSaved.map((section) => {
               const Icon = getIcon(section.icon);
               const isActive = section.slug === activeSection;
               return (
@@ -134,17 +168,16 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
             })}
           </div>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            {filteredItems.map((item) => (
+            {savedBySection.map((item) => (
               <ItemCard
                 key={item._id}
                 item={item}
-                saved={isSaved(item._id)}
-                onToggleSave={() => toggleSave(item._id)}
+                onRemove={() => toggleSave(item._id)}
               />
             ))}
           </div>
-          {filteredItems.length === 0 && (
-            <p className="text-muted-foreground text-sm">No sites in this section.</p>
+          {savedBySection.length === 0 && (
+            <p className="text-muted-foreground text-sm">No saved sites in this section.</p>
           )}
         </TabsContent>
       </Tabs>

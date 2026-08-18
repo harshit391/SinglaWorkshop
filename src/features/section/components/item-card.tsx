@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ExternalLink, Pin, AlertTriangle } from 'lucide-react';
+import { SaveButton } from '@/features/home/components/save-button';
 
 interface ItemData {
   _id: string;
@@ -17,6 +18,8 @@ interface ItemData {
 interface ItemCardProps {
   item: ItemData;
   sectionSlug: string;
+  saved?: boolean;
+  onToggleSave?: () => void;
 }
 
 function getDomain(url: string): string {
@@ -27,7 +30,7 @@ function getDomain(url: string): string {
   }
 }
 
-export function ItemCard({ item, sectionSlug }: ItemCardProps) {
+export function ItemCard({ item, sectionSlug, saved = false, onToggleSave }: ItemCardProps) {
   const CardWrapper = item.url
     ? ({ children }: { children: React.ReactNode }) => (
         <a href={item.url} target="_blank" rel="noopener noreferrer" className="group block">
@@ -52,7 +55,12 @@ export function ItemCard({ item, sectionSlug }: ItemCardProps) {
               </span>
             )}
           </div>
-          <ExternalLink className="text-muted-foreground h-4 w-4 opacity-0 transition-all duration-200 group-hover:opacity-100" />
+          <div className="flex items-center gap-1">
+            {onToggleSave && (
+              <SaveButton saved={saved} onToggle={onToggleSave} />
+            )}
+            <ExternalLink className="text-muted-foreground h-4 w-4 opacity-0 transition-all duration-200 group-hover:opacity-100" />
+          </div>
         </div>
         <h3 className="mt-3 text-lg leading-tight font-semibold">{item.title}</h3>
         {item.urlUnstable && (

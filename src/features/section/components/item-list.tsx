@@ -1,3 +1,6 @@
+'use client';
+
+import { useSavedItems } from '@/shared/hooks/use-saved-items';
 import { ItemCard } from './item-card';
 
 interface ItemData {
@@ -10,6 +13,7 @@ interface ItemData {
   url?: string;
   imageUrl?: string;
   pinned: boolean;
+  urlUnstable?: boolean;
   updatedAt: string;
 }
 
@@ -19,6 +23,8 @@ interface ItemListProps {
 }
 
 export function ItemList({ items, sectionSlug }: ItemListProps) {
+  const { isSaved, toggleSave } = useSavedItems();
+
   if (items.length === 0) {
     return (
       <p className="text-muted-foreground text-sm">
@@ -30,7 +36,13 @@ export function ItemList({ items, sectionSlug }: ItemListProps) {
   return (
     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
       {items.map((item) => (
-        <ItemCard key={item._id} item={item} sectionSlug={sectionSlug} />
+        <ItemCard
+          key={item._id}
+          item={item}
+          sectionSlug={sectionSlug}
+          saved={isSaved(item._id)}
+          onToggleSave={() => toggleSave(item._id)}
+        />
       ))}
     </div>
   );
