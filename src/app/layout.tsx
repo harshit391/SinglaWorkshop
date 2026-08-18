@@ -4,6 +4,7 @@ import { Caveat } from 'next/font/google';
 import { Sidebar } from '@/shared/components/layout/sidebar';
 import { MobileHeader } from '@/shared/components/layout/mobile-header';
 import { RegisterSW } from '@/shared/components/common/register-sw';
+import { AdminShortcut } from '@/shared/components/common/admin-shortcut';
 import { getSections } from '@/server/data/sections';
 import type { NavLink } from '@/shared/lib/constants';
 import './globals.css';
@@ -82,6 +83,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     >
       <body className="flex min-h-screen antialiased">
         <RegisterSW />
+        <AdminShortcut />
         <Sidebar links={links} />
         <div className="flex min-h-screen flex-1 flex-col">
           <MobileHeader links={links} />
