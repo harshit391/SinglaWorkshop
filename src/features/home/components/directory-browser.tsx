@@ -133,8 +133,10 @@ function OnboardingView({ items, onDone }: {
 }
 
 export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
-  const { savedIds, isSaved, toggleSave, isFirstVisit, markVisited } = useSavedItems();
+  const { savedIds, toggleSave, isFirstVisit, markVisited, ready } = useSavedItems();
   const [activeSection, setActiveSection] = useState(sections[0]?.slug ?? '');
+
+  if (!ready) return null;
 
   const savedItems = useMemo(
     () => items.filter((item) => savedIds.includes(item._id)),

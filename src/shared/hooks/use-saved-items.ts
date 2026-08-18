@@ -1,19 +1,23 @@
 'use client';
 
-import { useCallback, useRef } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 
 const STORAGE_KEY = 'singla-saved-items';
 
-function readIds(): string[] {
-  if (typeof window === 'undefined') return [];
-  return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-}
-
 export function useSavedItems() {
-  const initialIds = useRef<string[]>(readIds());
-  const savedIds = initialIds.current;
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const [firstVisit, setFirstVisit] = useState(false);
+  const [ready, setReady] = useState(false);
 
-  const isFirstVisit = typeof window !== 'undefined' && localStorage.getItem(STORAGE_KEY) === null;
+  useEffect(() => {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw === null) {
+      setFirstVisit(true);
+    } else {
+      setSavedIds(JSON.parse(raw));
+    }
+    setReady(true);
+  }, []);
 
   const isSaved = useCallback(
     (id: string) => savedIds.includes(id),
@@ -34,5 +38,5 @@ export function useSavedItems() {
     }
   }, []);
 
-  return { savedIds, isSaved, toggleSave, isFirstVisit, markVisited };
+  return { savedIds, isSaved, toggleSave, isFirstVisit: firstVisit, markVisited, ready };
 }
