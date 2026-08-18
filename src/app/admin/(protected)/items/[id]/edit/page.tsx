@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import { connection } from 'next/server';
 import type { Metadata } from 'next';
 import { getItemById } from '@/server/data/items';
 import { getAllSections } from '@/server/data/sections';
@@ -11,6 +12,7 @@ interface PageProps {
 export const metadata: Metadata = { title: 'Edit Item' };
 
 export default async function AdminEditItemPage({ params }: PageProps) {
+  await connection();
   const { id } = await params;
   const [item, sections] = await Promise.all([getItemById(id), getAllSections()]);
 

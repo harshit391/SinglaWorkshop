@@ -1,13 +1,20 @@
+import { cacheLife, cacheTag } from 'next/cache';
 import { connectDB } from '@/server/db';
 import { Item, Section } from '@/server/db/models';
 import type { CreateItemInput, UpdateItemInput } from '@/server/validations/item';
 
 export async function getItemsBySection(sectionId: string) {
+  'use cache';
+  cacheLife('minutes');
+  cacheTag('items');
   await connectDB();
   return Item.find({ section: sectionId }).sort({ pinned: -1, updatedAt: -1 }).lean();
 }
 
 export async function getItemBySlug(sectionSlug: string, itemSlug: string) {
+  'use cache';
+  cacheLife('minutes');
+  cacheTag('items');
   await connectDB();
   const section = await Section.findOne({ slug: sectionSlug }).lean();
   if (!section) return null;
@@ -15,16 +22,25 @@ export async function getItemBySlug(sectionSlug: string, itemSlug: string) {
 }
 
 export async function getFeaturedItems(limit = 4) {
+  'use cache';
+  cacheLife('minutes');
+  cacheTag('items');
   await connectDB();
   return Item.find({ featured: true }).populate('section').sort({ updatedAt: -1 }).limit(limit).lean();
 }
 
 export async function getRecentItems(limit = 5) {
+  'use cache';
+  cacheLife('minutes');
+  cacheTag('items');
   await connectDB();
   return Item.find().populate('section').sort({ updatedAt: -1 }).limit(limit).lean();
 }
 
 export async function getItemCounts() {
+  'use cache';
+  cacheLife('minutes');
+  cacheTag('items', 'sections');
   await connectDB();
   const counts = await Item.aggregate([
     { $group: { _id: '$section', count: { $sum: 1 } } },

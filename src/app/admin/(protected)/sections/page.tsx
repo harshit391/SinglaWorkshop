@@ -1,3 +1,4 @@
+import { connection } from 'next/server';
 import type { Metadata } from 'next';
 import { getAllSections } from '@/server/data/sections';
 import { SectionForm } from '@/features/admin/components/section-form';
@@ -6,6 +7,7 @@ import { SectionListAdmin } from '@/features/admin/components/section-list-admin
 export const metadata: Metadata = { title: 'Manage Sections' };
 
 export default async function AdminSectionsPage() {
+  await connection();
   const sections = await getAllSections();
 
   return (

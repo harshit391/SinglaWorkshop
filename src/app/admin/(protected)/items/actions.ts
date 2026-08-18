@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { requireAuth } from '@/server/auth/helpers';
 import { createItem, updateItem, deleteItem, quickUpdateUrl } from '@/server/data/items';
 import { createItemSchema, updateItemSchema, quickUpdateUrlSchema } from '@/server/validations/item';
@@ -34,6 +34,7 @@ export async function createItemAction(formData: FormData) {
   }
 
   await createItem(parsed.data);
+  updateTag('items');
   revalidatePath('/', 'layout');
   return { success: true };
 }
@@ -67,6 +68,7 @@ export async function updateItemAction(id: string, formData: FormData) {
   }
 
   await updateItem(id, parsed.data);
+  updateTag('items');
   revalidatePath('/', 'layout');
   return { success: true };
 }
@@ -74,6 +76,7 @@ export async function updateItemAction(id: string, formData: FormData) {
 export async function deleteItemAction(id: string) {
   await requireAuth();
   await deleteItem(id);
+  updateTag('items');
   revalidatePath('/', 'layout');
   return { success: true };
 }
@@ -87,6 +90,7 @@ export async function quickUpdateUrlAction(id: string, url: string) {
   }
 
   await quickUpdateUrl(id, parsed.data.url);
+  updateTag('items');
   revalidatePath('/', 'layout');
   return { success: true };
 }

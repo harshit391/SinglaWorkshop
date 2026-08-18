@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { connection } from 'next/server';
 import { getAllSections } from '@/server/data/sections';
 import { getAllItems } from '@/server/data/items';
 import type { Metadata } from 'next';
@@ -6,6 +7,7 @@ import type { Metadata } from 'next';
 export const metadata: Metadata = { title: 'Admin Dashboard' };
 
 export default async function AdminDashboardPage() {
+  await connection();
   const [sections, items] = await Promise.all([getAllSections(), getAllItems()]);
 
   const statusCounts = items.reduce(

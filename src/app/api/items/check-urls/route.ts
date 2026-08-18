@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { updateTag } from 'next/cache';
 import { auth } from '@/server/auth';
 import { connectDB } from '@/server/db';
 import { Item } from '@/server/db/models';
@@ -75,6 +76,10 @@ export async function POST() {
         status: 'ok',
       });
     }
+  }
+
+  if (results.some((r) => r.status === 'updated')) {
+    updateTag('items');
   }
 
   return NextResponse.json({ results, checkedAt: new Date().toISOString() });

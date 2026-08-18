@@ -1,6 +1,6 @@
 'use server';
 
-import { revalidatePath } from 'next/cache';
+import { revalidatePath, updateTag } from 'next/cache';
 import { requireAuth } from '@/server/auth/helpers';
 import { createSection, updateSection, deleteSection } from '@/server/data/sections';
 import { createSectionSchema, updateSectionSchema } from '@/server/validations/section';
@@ -24,6 +24,7 @@ export async function createSectionAction(formData: FormData) {
   }
 
   await createSection(parsed.data);
+  updateTag('sections');
   revalidatePath('/', 'layout');
   return { success: true };
 }
@@ -47,6 +48,7 @@ export async function updateSectionAction(id: string, formData: FormData) {
   }
 
   await updateSection(id, parsed.data);
+  updateTag('sections');
   revalidatePath('/', 'layout');
   return { success: true };
 }
@@ -54,6 +56,7 @@ export async function updateSectionAction(id: string, formData: FormData) {
 export async function deleteSectionAction(id: string) {
   await requireAuth();
   await deleteSection(id);
+  updateTag('sections');
   revalidatePath('/', 'layout');
   return { success: true };
 }

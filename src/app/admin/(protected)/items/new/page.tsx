@@ -1,3 +1,4 @@
+import { connection } from 'next/server';
 import type { Metadata } from 'next';
 import { getAllSections } from '@/server/data/sections';
 import { ItemForm } from '@/features/admin/components/item-form';
@@ -5,6 +6,7 @@ import { ItemForm } from '@/features/admin/components/item-form';
 export const metadata: Metadata = { title: 'Create Item' };
 
 export default async function AdminNewItemPage() {
+  await connection();
   const sections = await getAllSections();
 
   return (

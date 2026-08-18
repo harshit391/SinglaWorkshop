@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { connection } from 'next/server';
 import type { Metadata } from 'next';
 import { getAllItems } from '@/server/data/items';
 import { ItemListAdmin } from '@/features/admin/components/item-list-admin';
@@ -6,6 +7,7 @@ import { ItemListAdmin } from '@/features/admin/components/item-list-admin';
 export const metadata: Metadata = { title: 'Manage Items' };
 
 export default async function AdminItemsPage() {
+  await connection();
   const items = await getAllItems();
 
   return (

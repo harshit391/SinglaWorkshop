@@ -1,3 +1,4 @@
+import { connection } from 'next/server';
 import type { Metadata } from 'next';
 import { getSiteSettings } from '@/server/data/settings';
 import { SettingsForm } from '@/features/admin/components/settings-form';
@@ -5,6 +6,7 @@ import { SettingsForm } from '@/features/admin/components/settings-form';
 export const metadata: Metadata = { title: 'Site Settings' };
 
 export default async function AdminSettingsPage() {
+  await connection();
   const settings = await getSiteSettings();
 
   return (

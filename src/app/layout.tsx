@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Caveat } from 'next/font/google';
@@ -84,9 +85,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="flex min-h-screen antialiased">
         <RegisterSW />
         <AdminShortcut />
-        <Sidebar links={links} />
+        <Suspense>
+          <Sidebar links={links} />
+        </Suspense>
         <div className="flex min-h-screen flex-1 flex-col">
-          <MobileHeader links={links} />
+          <Suspense>
+            <MobileHeader links={links} />
+          </Suspense>
           <main className="flex-1">{children}</main>
         </div>
       </body>

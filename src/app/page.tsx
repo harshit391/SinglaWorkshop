@@ -4,20 +4,6 @@ import { WorkshopStats } from '@/features/home/components/workshop-stats';
 import { RecentActivity } from '@/features/home/components/recent-activity';
 import { getItemCounts, getRecentItems, getFeaturedItems } from '@/server/data';
 
-function timeAgo(date: Date): string {
-  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
-  if (seconds < 60) return 'Just now';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days === 1) return 'Yesterday';
-  if (days < 7) return `${days}d ago`;
-  const weeks = Math.floor(days / 7);
-  return `${weeks}w ago`;
-}
-
 export default async function HomePage() {
   const [stats, recentItems, featuredItems] = await Promise.all([
     getItemCounts(),
@@ -30,7 +16,7 @@ export default async function HomePage() {
     sectionName: item.section?.name ?? 'Uncategorized',
     sectionSlug: item.section?.slug ?? '',
     sectionColor: item.section?.color ?? 'hsl(36 100% 50%)',
-    updatedAt: timeAgo(new Date(item.updatedAt)),
+    updatedAt: item.updatedAt.toString(),
   }));
 
   const featuredFormatted = featuredItems.map((item: any) => ({
