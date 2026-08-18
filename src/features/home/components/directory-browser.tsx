@@ -136,8 +136,6 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
   const { savedIds, toggleSave, isFirstVisit, markVisited, ready } = useSavedItems();
   const [activeSection, setActiveSection] = useState(sections[0]?.slug ?? '');
 
-  if (!ready) return null;
-
   const savedItems = useMemo(
     () => items.filter((item) => savedIds.includes(item._id)),
     [items, savedIds],
@@ -162,6 +160,8 @@ export function DirectoryBrowser({ items, sections }: DirectoryBrowserProps) {
     () => items.filter((item) => item.featured),
     [items],
   );
+
+  if (!ready) return null;
 
   if (isFirstVisit) {
     return (
