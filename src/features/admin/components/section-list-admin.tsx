@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { deleteSectionAction } from '@/app/admin/sections/actions';
+import { deleteSectionAction } from '@/app/admin/(protected)/sections/actions';
 import { getIcon } from '@/shared/lib/icons';
 
 interface Section {

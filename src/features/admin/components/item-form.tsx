@@ -2,7 +2,7 @@
 
 import { useActionState } from 'react';
 import { useRouter } from 'next/navigation';
-import { createItemAction, updateItemAction } from '@/app/admin/items/actions';
+import { createItemAction, updateItemAction } from '@/app/admin/(protected)/items/actions';
 
 interface Section {
   _id: string;

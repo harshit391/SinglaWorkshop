@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { deleteItemAction } from '@/app/admin/items/actions';
+import { deleteItemAction } from '@/app/admin/(protected)/items/actions';
 
 interface Item {
   _id: string;

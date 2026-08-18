@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
-import { updateSettingsAction } from '@/app/admin/settings/actions';
+import { updateSettingsAction } from '@/app/admin/(protected)/settings/actions';
 
 interface SettingsFormProps {
   settings: {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState } from 'react';
-import { createSectionAction, updateSectionAction } from '@/app/admin/sections/actions';
+import { createSectionAction, updateSectionAction } from '@/app/admin/(protected)/sections/actions';
 import { ICON_NAMES } from '@/shared/lib/icons';
 
 interface SectionFormProps {
