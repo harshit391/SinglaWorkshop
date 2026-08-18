@@ -17,18 +17,13 @@ interface ItemFormProps {
     slug: string;
     section: { _id: string } | string;
     description: string;
-    content: string;
-    tags: string[];
-    status: string;
     url?: string;
-    imageUrl?: string;
     featured: boolean;
     pinned: boolean;
+    urlUnstable: boolean;
   };
   sections: Section[];
 }
-
-const STATUSES = ['IDEA', 'IN_PROGRESS', 'ACTIVE', 'COMPLETED', 'ARCHIVED'];
 
 export function ItemForm({ item, sections }: ItemFormProps) {
   const router = useRouter();
@@ -85,6 +80,19 @@ export function ItemForm({ item, sections }: ItemFormProps) {
         />
       </div>
 
+      <div>
+        <label className="text-sm font-medium" htmlFor="url">URL</label>
+        <input
+          id="url"
+          name="url"
+          type="text"
+          required
+          placeholder="https://example.com"
+          defaultValue={item?.url ?? ''}
+          className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm font-mono focus:border-primary focus:outline-none"
+        />
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="text-sm font-medium" htmlFor="slug">Slug</label>
@@ -98,7 +106,7 @@ export function ItemForm({ item, sections }: ItemFormProps) {
           />
         </div>
         <div>
-          <label className="text-sm font-medium" htmlFor="section">Section</label>
+          <label className="text-sm font-medium" htmlFor="section">Category</label>
           <select
             id="section"
             name="section"
@@ -106,7 +114,7 @@ export function ItemForm({ item, sections }: ItemFormProps) {
             defaultValue={sectionId}
             className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
           >
-            <option value="">Select section...</option>
+            <option value="">Select category...</option>
             {sections.map((s) => (
               <option key={s._id} value={s._id}>{s.name}</option>
             ))}
@@ -116,76 +124,19 @@ export function ItemForm({ item, sections }: ItemFormProps) {
 
       <div>
         <label className="text-sm font-medium" htmlFor="description">Description</label>
-        <input
+        <textarea
           id="description"
           name="description"
-          type="text"
+          rows={3}
+          placeholder="Your personal note about this site..."
           defaultValue={item?.description ?? ''}
           className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
         />
       </div>
 
-      <div>
-        <label className="text-sm font-medium" htmlFor="content">Content</label>
-        <textarea
-          id="content"
-          name="content"
-          rows={8}
-          defaultValue={item?.content ?? ''}
-          className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
-        />
-      </div>
+      <input type="hidden" name="status" value="ACTIVE" />
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium" htmlFor="status">Status</label>
-          <select
-            id="status"
-            name="status"
-            defaultValue={item?.status ?? 'ACTIVE'}
-            className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
-          >
-            {STATUSES.map((s) => (
-              <option key={s} value={s}>{s.replace('_', ' ')}</option>
-            ))}
-          </select>
-        </div>
-        <div>
-          <label className="text-sm font-medium" htmlFor="tags">Tags (comma separated)</label>
-          <input
-            id="tags"
-            name="tags"
-            type="text"
-            defaultValue={item?.tags?.join(', ') ?? ''}
-            className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
-          />
-        </div>
-      </div>
-
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm font-medium" htmlFor="url">URL</label>
-          <input
-            id="url"
-            name="url"
-            type="text"
-            defaultValue={item?.url ?? ''}
-            className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
-          />
-        </div>
-        <div>
-          <label className="text-sm font-medium" htmlFor="imageUrl">Image URL</label>
-          <input
-            id="imageUrl"
-            name="imageUrl"
-            type="text"
-            defaultValue={item?.imageUrl ?? ''}
-            className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
-          />
-        </div>
-      </div>
-
-      <div className="flex gap-6">
+      <div className="flex flex-wrap gap-6">
         <div className="flex items-center gap-2">
           <input
             id="featured"
@@ -195,7 +146,7 @@ export function ItemForm({ item, sections }: ItemFormProps) {
             defaultChecked={item?.featured ?? false}
             className="h-4 w-4 rounded border-border"
           />
-          <label className="text-sm font-medium" htmlFor="featured">Featured</label>
+          <label className="text-sm font-medium" htmlFor="featured">Featured on homepage</label>
         </div>
         <div className="flex items-center gap-2">
           <input
@@ -206,7 +157,18 @@ export function ItemForm({ item, sections }: ItemFormProps) {
             defaultChecked={item?.pinned ?? false}
             className="h-4 w-4 rounded border-border"
           />
-          <label className="text-sm font-medium" htmlFor="pinned">Pinned</label>
+          <label className="text-sm font-medium" htmlFor="pinned">Pin to top</label>
+        </div>
+        <div className="flex items-center gap-2">
+          <input
+            id="urlUnstable"
+            name="urlUnstable"
+            type="checkbox"
+            value="true"
+            defaultChecked={item?.urlUnstable ?? false}
+            className="h-4 w-4 rounded border-border"
+          />
+          <label className="text-sm font-medium text-amber-400" htmlFor="urlUnstable">URL may change</label>
         </div>
       </div>
 
@@ -216,7 +178,7 @@ export function ItemForm({ item, sections }: ItemFormProps) {
           disabled={pending}
           className="bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-50 rounded-md px-4 py-2 text-sm font-medium transition-colors"
         >
-          {pending ? 'Saving...' : item ? 'Update Item' : 'Create Item'}
+          {pending ? 'Saving...' : item ? 'Update Site' : 'Add Site'}
         </button>
         <button
           type="button"

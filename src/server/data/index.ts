@@ -19,6 +19,7 @@ export {
   createItem,
   updateItem,
   deleteItem,
+  quickUpdateUrl,
 } from './items';
 
 export { getSiteSettings, updateSiteSettings } from './settings';

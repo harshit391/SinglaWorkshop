@@ -6,7 +6,7 @@ export function WorkshopStats({ stats }: WorkshopStatsProps) {
   return (
     <section className="border-border bg-card rounded-lg border p-5">
       <h3 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
-        Workshop
+        Collection
       </h3>
       <dl className="mt-3 space-y-2">
         {stats.map((stat) => (

@@ -60,3 +60,8 @@ export async function deleteItem(id: string) {
   await connectDB();
   return Item.findByIdAndDelete(id);
 }
+
+export async function quickUpdateUrl(id: string, url: string) {
+  await connectDB();
+  return Item.findByIdAndUpdate(id, { url }, { new: true }).lean();
+}

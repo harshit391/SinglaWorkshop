@@ -15,10 +15,15 @@ export const createItemSchema = z.object({
   imageUrl: z.string().optional(),
   featured: z.coerce.boolean().default(false),
   pinned: z.coerce.boolean().default(false),
+  urlUnstable: z.coerce.boolean().default(false),
   metadata: z.record(z.string(), z.unknown()).default({}),
 });
 
 export const updateItemSchema = createItemSchema.partial();
+
+export const quickUpdateUrlSchema = z.object({
+  url: z.string().min(1, 'URL is required'),
+});
 
 export type CreateItemInput = z.infer<typeof createItemSchema>;
 export type UpdateItemInput = z.infer<typeof updateItemSchema>;

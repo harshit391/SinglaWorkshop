@@ -28,6 +28,7 @@ const itemSchema = new Schema(
     imageUrl: String,
     featured: { type: Boolean, default: false },
     pinned: { type: Boolean, default: false },
+    urlUnstable: { type: Boolean, default: false },
     metadata: { type: Schema.Types.Mixed, default: {} },
   },
   { timestamps: true },

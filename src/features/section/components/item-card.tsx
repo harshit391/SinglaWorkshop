@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowUpRight, Pin } from 'lucide-react';
+import { ExternalLink, Pin, AlertTriangle } from 'lucide-react';
 
 interface ItemData {
   _id: string;
@@ -8,7 +8,9 @@ interface ItemData {
   description: string;
   status: string;
   tags: string[];
+  url?: string;
   pinned: boolean;
+  urlUnstable?: boolean;
   updatedAt: string;
 }
 
@@ -17,28 +19,48 @@ interface ItemCardProps {
   sectionSlug: string;
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  IDEA: 'Idea',
-  IN_PROGRESS: 'In Progress',
-  ACTIVE: 'Active',
-  COMPLETED: 'Completed',
-  ARCHIVED: 'Archived',
-};
+function getDomain(url: string): string {
+  try {
+    return new URL(url).hostname.replace('www.', '');
+  } catch {
+    return url;
+  }
+}
 
 export function ItemCard({ item, sectionSlug }: ItemCardProps) {
+  const CardWrapper = item.url
+    ? ({ children }: { children: React.ReactNode }) => (
+        <a href={item.url} target="_blank" rel="noopener noreferrer" className="group block">
+          {children}
+        </a>
+      )
+    : ({ children }: { children: React.ReactNode }) => (
+        <Link href={`/${sectionSlug}/${item.slug}`} className="group block">
+          {children}
+        </Link>
+      );
+
   return (
-    <Link href={`/${sectionSlug}/${item.slug}`} className="group block">
+    <CardWrapper>
       <article className="border-border bg-card hover:border-primary/30 hover:shadow-primary/5 relative h-full rounded-lg border p-5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">
             {item.pinned && <Pin className="text-primary h-3 w-3" />}
-            <span className="bg-secondary text-secondary-foreground rounded px-1.5 py-0.5 font-mono text-[10px] font-medium">
-              {STATUS_LABELS[item.status] ?? item.status}
-            </span>
+            {item.url && (
+              <span className="text-muted-foreground font-mono text-[10px]">
+                {getDomain(item.url)}
+              </span>
+            )}
           </div>
-          <ArrowUpRight className="text-muted-foreground h-4 w-4 opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
+          <ExternalLink className="text-muted-foreground h-4 w-4 opacity-0 transition-all duration-200 group-hover:opacity-100" />
         </div>
         <h3 className="mt-3 text-lg leading-tight font-semibold">{item.title}</h3>
+        {item.urlUnstable && (
+          <p className="mt-1.5 flex items-center gap-1 text-[10px] text-amber-400">
+            <AlertTriangle className="h-3 w-3" />
+            URL may change anytime
+          </p>
+        )}
         {item.description && (
           <p className="text-muted-foreground mt-2 line-clamp-2 text-sm leading-relaxed">
             {item.description}
@@ -57,6 +79,6 @@ export function ItemCard({ item, sectionSlug }: ItemCardProps) {
           </div>
         )}
       </article>
-    </Link>
+    </CardWrapper>
   );
 }

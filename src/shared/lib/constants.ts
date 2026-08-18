@@ -5,6 +5,5 @@ export type NavLink = {
 };
 
 export const STATIC_NAV_LINKS: NavLink[] = [
-  { label: 'Workbench', href: '/', icon: 'LayoutDashboard' },
-  { label: 'About', href: '/about', icon: 'User' },
+  { label: 'Home', href: '/', icon: 'LayoutDashboard' },
 ];

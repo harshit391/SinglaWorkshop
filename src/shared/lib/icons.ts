@@ -20,6 +20,8 @@ import {
   Heart,
   Star,
   Zap,
+  Film,
+  Gamepad2,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -45,6 +47,8 @@ const ICON_MAP: Record<string, LucideIcon> = {
   Heart,
   Star,
   Zap,
+  Film,
+  Gamepad2,
 };
 
 export function getIcon(name: string): LucideIcon {

@@ -12,16 +12,16 @@ export default async function AdminItemsPage() {
     <div>
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Items</h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Sites</h1>
           <p className="text-muted-foreground mt-1 text-sm">
-            All content items across all sections.
+            All websites across all categories.
           </p>
         </div>
         <Link
           href="/admin/items/new"
           className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium transition-colors"
         >
-          New Item
+          Add Site
         </Link>
       </div>
 

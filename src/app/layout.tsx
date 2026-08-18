@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     default: 'Singla Workshop',
     template: '%s | Singla Workshop',
   },
-  description: 'A personal workshop for things I build, track, learn, and experiment with.',
+  description: 'A curated collection of useful websites and resources — movies, anime, books, games, software, and more.',
   manifest: '/site.webmanifest',
   appleWebApp: {
     capable: true,
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'Singla Workshop',
-    description: 'A personal workshop for things I build, track, learn, and experiment with.',
+    description: 'A curated collection of useful websites and resources — movies, anime, books, games, software, and more.',
     url: '/',
     siteName: 'Singla Workshop',
     locale: 'en_US',
@@ -71,9 +71,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }));
 
   const links: NavLink[] = [
-    { label: 'Workbench', href: '/', icon: 'LayoutDashboard' },
+    { label: 'Home', href: '/', icon: 'LayoutDashboard' },
     ...sectionLinks,
-    { label: 'About', href: '/about', icon: 'User' },
   ];
 
   return (

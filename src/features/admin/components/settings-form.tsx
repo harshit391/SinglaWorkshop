@@ -5,8 +5,7 @@ import { updateSettingsAction } from '@/app/admin/(protected)/settings/actions';
 
 interface SettingsFormProps {
   settings: {
-    todaysNote?: { text: string; author: string };
-    currentWork?: { title: string; version: string; href: string };
+    aboutContent?: string;
   };
 }
 
@@ -26,65 +25,18 @@ export function SettingsForm({ settings }: SettingsFormProps) {
 
       <fieldset className="space-y-3">
         <legend className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          Today&apos;s Note
+          Site Settings
         </legend>
         <div>
-          <label className="text-sm font-medium" htmlFor="noteText">Quote</label>
+          <label className="text-sm font-medium" htmlFor="aboutContent">About Content</label>
           <textarea
-            id="noteText"
-            name="noteText"
-            rows={3}
-            defaultValue={settings.todaysNote?.text ?? ''}
+            id="aboutContent"
+            name="aboutContent"
+            rows={5}
+            placeholder="Description shown on the about page..."
+            defaultValue={settings.aboutContent ?? ''}
             className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
-        </div>
-        <div>
-          <label className="text-sm font-medium" htmlFor="noteAuthor">Author</label>
-          <input
-            id="noteAuthor"
-            name="noteAuthor"
-            type="text"
-            defaultValue={settings.todaysNote?.author ?? ''}
-            className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
-          />
-        </div>
-      </fieldset>
-
-      <fieldset className="space-y-3">
-        <legend className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-          Currently Working On
-        </legend>
-        <div>
-          <label className="text-sm font-medium" htmlFor="workTitle">Title</label>
-          <input
-            id="workTitle"
-            name="workTitle"
-            type="text"
-            defaultValue={settings.currentWork?.title ?? ''}
-            className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
-          />
-        </div>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="text-sm font-medium" htmlFor="workVersion">Version</label>
-            <input
-              id="workVersion"
-              name="workVersion"
-              type="text"
-              defaultValue={settings.currentWork?.version ?? ''}
-              className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="text-sm font-medium" htmlFor="workHref">Link</label>
-            <input
-              id="workHref"
-              name="workHref"
-              type="text"
-              defaultValue={settings.currentWork?.href ?? '/'}
-              className="border-border bg-background mt-1 block w-full rounded-md border px-3 py-2 text-sm focus:border-primary focus:outline-none"
-            />
-          </div>
         </div>
       </fieldset>
 

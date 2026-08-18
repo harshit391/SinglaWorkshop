@@ -7,10 +7,10 @@ export default function NotFound() {
       <p className="text-primary font-mono text-5xl font-bold">404</p>
       <h1 className="mt-4 text-2xl font-semibold">Page not found</h1>
       <p className="text-muted-foreground mt-2 text-sm">
-        This part of the workshop doesn&apos;t exist yet.
+        This page doesn&apos;t exist.
       </p>
       <Button asChild className="mt-6">
-        <Link href="/">Back to Workbench</Link>
+        <Link href="/">Back to Home</Link>
       </Button>
     </div>
   );

@@ -19,24 +19,24 @@ export default async function AdminDashboardPage() {
   return (
     <div>
       <h1 className="text-2xl font-semibold tracking-tight">Dashboard</h1>
-      <p className="text-muted-foreground mt-1 text-sm">Manage your workshop content.</p>
+      <p className="text-muted-foreground mt-1 text-sm">Manage your website directory.</p>
 
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
         <div className="border-border bg-card rounded-lg border p-5">
           <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
-            Total Sections
+            Categories
           </p>
           <p className="mt-1 text-3xl font-semibold">{sections.length}</p>
         </div>
         <div className="border-border bg-card rounded-lg border p-5">
           <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
-            Total Items
+            Total Sites
           </p>
           <p className="mt-1 text-3xl font-semibold">{items.length}</p>
         </div>
         <div className="border-border bg-card rounded-lg border p-5">
           <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide">
-            Active Items
+            Active Sites
           </p>
           <p className="mt-1 text-3xl font-semibold">{statusCounts['ACTIVE'] || 0}</p>
         </div>
@@ -47,13 +47,13 @@ export default async function AdminDashboardPage() {
           href="/admin/sections"
           className="bg-secondary text-secondary-foreground hover:bg-secondary/80 rounded-md px-4 py-2 text-sm font-medium transition-colors"
         >
-          Manage Sections
+          Manage Categories
         </Link>
         <Link
           href="/admin/items/new"
           className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-4 py-2 text-sm font-medium transition-colors"
         >
-          Create New Item
+          Add New Site
         </Link>
       </div>
 
