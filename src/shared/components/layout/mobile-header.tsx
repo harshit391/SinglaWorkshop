@@ -28,7 +28,7 @@ export function MobileHeader({ links }: MobileHeaderProps) {
             <Menu className="h-5 w-5" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="bg-card w-64 p-0">
+        <SheetContent side="left" showCloseButton={false} className="bg-card w-64 p-0">
           <SheetTitle className="sr-only">Navigation menu</SheetTitle>
           <div className="flex h-full flex-col">
             <div className="border-border flex items-center justify-between border-b px-4 py-4">
