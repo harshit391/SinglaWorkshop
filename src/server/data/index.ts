@@ -14,6 +14,7 @@ export {
   getFeaturedItems,
   getRecentItems,
   getItemCounts,
+  getAllActiveItems,
   getItemById,
   getAllItems,
   createItem,

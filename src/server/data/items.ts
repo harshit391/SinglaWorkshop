@@ -52,6 +52,17 @@ export async function getItemCounts() {
   });
 }
 
+export async function getAllActiveItems() {
+  'use cache';
+  cacheLife('minutes');
+  cacheTag('items', 'sections');
+  await connectDB();
+  return Item.find({ status: 'ACTIVE' })
+    .populate('section')
+    .sort({ pinned: -1, updatedAt: -1 })
+    .lean();
+}
+
 export async function getItemById(id: string) {
   await connectDB();
   return Item.findById(id).populate('section').lean();

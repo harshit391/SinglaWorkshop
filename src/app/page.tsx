@@ -1,14 +1,15 @@
 import { HeroSection } from '@/features/home/components/hero-section';
-import { ProjectGrid } from '@/features/home/components/category-grid';
+import { DirectoryBrowser } from '@/features/home/components/directory-browser';
 import { WorkshopStats } from '@/features/home/components/workshop-stats';
 import { RecentActivity } from '@/features/home/components/recent-activity';
-import { getItemCounts, getRecentItems, getFeaturedItems } from '@/server/data';
+import { getItemCounts, getRecentItems, getAllActiveItems, getSections } from '@/server/data';
 
 export default async function HomePage() {
-  const [stats, recentItems, featuredItems] = await Promise.all([
+  const [stats, recentItems, allItems, sections] = await Promise.all([
     getItemCounts(),
     getRecentItems(5),
-    getFeaturedItems(6),
+    getAllActiveItems(),
+    getSections(),
   ]);
 
   const recentFormatted = recentItems.map((item: any) => ({
@@ -19,14 +20,25 @@ export default async function HomePage() {
     updatedAt: item.updatedAt.toString(),
   }));
 
-  const featuredFormatted = featuredItems.map((item: any) => ({
+  const directoryItems = allItems.map((item: any) => ({
+    _id: item._id.toString(),
     title: item.title,
-    description: item.description,
-    url: item.url ?? '#',
+    slug: item.slug,
+    description: item.description ?? '',
+    url: item.url ?? '',
     urlUnstable: item.urlUnstable ?? false,
+    pinned: item.pinned ?? false,
     sectionName: item.section?.name ?? 'Uncategorized',
     sectionSlug: item.section?.slug ?? '',
     sectionColor: item.section?.color ?? 'hsl(36 100% 50%)',
+  }));
+
+  const sectionsFormatted = sections.map((s: any) => ({
+    _id: s._id.toString(),
+    name: s.name,
+    slug: s.slug,
+    color: s.color ?? 'hsl(36 100% 50%)',
+    icon: s.icon ?? 'Globe',
   }));
 
   return (
@@ -34,7 +46,7 @@ export default async function HomePage() {
       <div className="flex-1 px-4 py-6 md:px-8 lg:px-10">
         <HeroSection />
         <div className="mt-8">
-          <ProjectGrid items={featuredFormatted} />
+          <DirectoryBrowser items={directoryItems} sections={sectionsFormatted} />
         </div>
         <div className="mt-8 space-y-4 xl:hidden">
           <WorkshopStats stats={stats} />
