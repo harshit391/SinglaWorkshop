@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Geist, Geist_Mono } from 'next/font/google';
 import { Caveat } from 'next/font/google';
 import { Sidebar } from '@/shared/components/layout/sidebar';
@@ -23,6 +23,10 @@ const caveat = Caveat({
   subsets: ['latin'],
 });
 
+export const viewport: Viewport = {
+  themeColor: '#f59e0b',
+};
+
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
   title: {
@@ -31,7 +35,6 @@ export const metadata: Metadata = {
   },
   description: 'A personal workshop for things I build, track, learn, and experiment with.',
   manifest: '/site.webmanifest',
-  themeColor: '#f59e0b',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
